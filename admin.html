@@ -16,31 +16,25 @@
             <!-- 角色编辑 -->
             <div class="bg-gray-900 p-8 rounded-3xl">
                 <h2 class="text-2xl mb-6">角色编辑</h2>
-                
                 <div class="mb-6">
-                    <label class="block text-sm mb-2">当前头像</label>
-                    <img id="preview-avatar" src="https://picsum.photos/id/1011/300/300" class="w-32 h-32 object-cover rounded-2xl mb-4">
+                    <img id="preview" src="https://picsum.photos/id/1011/300/300" class="w-48 h-48 object-cover rounded-2xl mb-4">
                 </div>
-                
-                <input type="file" id="avatar-upload" accept="image/*" class="mb-4" onchange="uploadImage(event)">
-                
-                <input id="role-name" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="角色名称">
-                <textarea id="role-intro" class="w-full bg-gray-800 p-4 rounded-2xl h-32" placeholder="角色介绍"></textarea>
-                
-                <button onclick="saveRole()" class="w-full bg-purple-600 py-4 rounded-2xl mt-6">保存角色信息</button>
+                <input type="file" id="upload" accept="image/*" onchange="previewImage(event)" class="mb-6">
+                <input id="name" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="角色名称">
+                <textarea id="intro" class="w-full bg-gray-800 p-4 rounded-2xl h-32" placeholder="角色介绍"></textarea>
+                <button onclick="saveCharacter()" class="w-full bg-purple-600 py-4 rounded-2xl mt-6">保存到数据库</button>
             </div>
             
-            <!-- 实时回复 -->
+            <!-- 回复区 -->
             <div class="bg-gray-900 p-8 rounded-3xl">
-                <h2 class="text-2xl mb-6">实时消息回复</h2>
-                <div id="admin-chat" class="h-96 bg-gray-950 p-4 rounded-2xl overflow-auto mb-4"></div>
-                <input id="admin-input" class="w-full bg-gray-800 p-4 rounded-2xl" placeholder="输入回复消息..." onkeypress="if(event.key==='Enter') sendReply()">
+                <h2 class="text-2xl mb-6">实时回复</h2>
+                <div id="chat" class="h-96 bg-gray-950 p-4 rounded-2xl overflow-auto mb-4"></div>
+                <input id="reply-input" class="w-full bg-gray-800 p-4 rounded-2xl" placeholder="回复消息..." onkeypress="if(event.key==='Enter') sendReply()">
             </div>
         </div>
     </div>
 
     <script>
-        // Firebase 配置 (保持不变)
         const firebaseConfig = {
           apiKey: "AIzaSyD5P6GsWhe1fpprUu10qpazJtlr3RZBhxs",
           authDomain: "goddess-chat.firebaseapp.com",
@@ -54,32 +48,30 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function uploadImage(e) {
+        function previewImage(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(ev) {
-                    document.getElementById('preview-avatar').src = ev.target.result;
+                    document.getElementById('preview').src = ev.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function saveRole() {
-            alert('角色信息已保存！（实际保存到Firebase）');
+        function saveCharacter() {
+            const name = document.getElementById('name').value;
+            const intro = document.getElementById('intro').value;
+            const avatar = document.getElementById('preview').src;
+            db.ref('characters/1').set({ name, intro, avatar });
+            alert('保存成功！前端会自动更新');
         }
 
         function sendReply() {
-            const input = document.getElementById('admin-input');
+            const input = document.getElementById('reply-input');
             const text = input.value.trim();
             if (!text) return;
-            // 模拟回复
-            const chat = document.getElementById('admin-chat');
-            const div = document.createElement('div');
-            div.className = 'text-right';
-            div.innerHTML = `<div class="inline-block bg-purple-600 px-5 py-3 rounded-3xl">${text}</div>`;
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
+            db.ref('chats/1').push({ type: 'ai', text, time: Date.now() });
             input.value = '';
         }
     </script>
