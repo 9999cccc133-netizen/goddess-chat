@@ -5,30 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>女神管理后台</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-gray-950 text-white p-8">
     <div class="max-w-6xl mx-auto">
-        <h1 class="text-4xl font-bold text-purple-400 mb-8 flex items-center gap-4">
-            <i class="fas fa-crown"></i> 女神管理后台
-        </h1>
+        <h1 class="text-4xl font-bold text-purple-400 mb-8">女神管理后台</h1>
         
         <div class="grid grid-cols-2 gap-8">
-            <!-- 角色管理 -->
+            <!-- 角色编辑 -->
             <div class="bg-gray-900 p-8 rounded-3xl">
-                <h2 class="text-2xl mb-6 text-purple-300">角色编辑</h2>
+                <h2 class="text-2xl mb-6">角色编辑</h2>
                 <input id="role-name" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="角色名称">
                 <input id="role-avatar" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="头像URL">
-                <button onclick="saveRole()" class="w-full bg-purple-600 py-4 rounded-2xl font-medium">保存角色信息</button>
+                <button onclick="saveRole()" class="w-full bg-purple-600 py-4 rounded-2xl">保存角色</button>
             </div>
             
             <!-- 实时回复 -->
             <div class="bg-gray-900 p-8 rounded-3xl">
-                <h2 class="text-2xl mb-6 text-purple-300">实时消息回复</h2>
-                <div id="admin-chat" class="h-96 bg-gray-950 p-4 rounded-2xl overflow-auto mb-4"></div>
-                <input id="admin-input" class="w-full bg-gray-800 p-4 rounded-2xl" placeholder="输入回复..." onkeypress="if(event.key==='Enter') sendReply()">
+                <h2 class="text-2xl mb-6">实时消息回复</h2>
+                <div id="admin-chat" class="h-96 bg-gray-950 p-4 rounded-2xl overflow-auto mb-4 text-sm"></div>
+                <input id="admin-input" class="w-full bg-gray-800 p-4 rounded-2xl" placeholder="输入回复消息..." onkeypress="if(event.key==='Enter') sendReply()">
             </div>
         </div>
     </div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyD5P6GsWhe1fpprUu10qpazJtlr3RZBhxs",
+          authDomain: "goddess-chat.firebaseapp.com",
+          databaseURL: "https://goddess-chat-default-rtdb.firebaseio.com",
+          projectId: "goddess-chat",
+          storageBucket: "goddess-chat.firebasestorage.app",
+          messagingSenderId: "1091228348527",
+          appId: "1:1091228348527:web:62636b56f7078149a1dd9a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function sendReply() {
+            const input = document.getElementById('admin-input');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            db.ref('chats/1').push({
+                type: 'ai',
+                text: text,
+                time: Date.now()
+            });
+            input.value = '';
+        }
+
+        // 监听用户消息
+        db.ref('chats/1').on('child_added', (snap) => {
+            const msg = snap.val();
+            const chat = document.getElementById('admin-chat');
+            const div = document.createElement('div');
+            div.className = msg.type === 'user' ? 'text-left text-pink-400' : 'text-right';
+            div.innerHTML = `<div class="inline-block px-4 py-2 rounded-2xl bg-gray-800 mb-2">${msg.text}</div>`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        });
+    </script>
 </body>
 </html>
