@@ -5,25 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>女神管理后台</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body class="bg-gray-950 text-white p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl font-bold text-purple-400 mb-8">女神管理后台</h1>
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-4xl font-bold text-purple-400 mb-8 flex items-center gap-4">
+            <i class="fas fa-crown"></i> 女神管理后台
+        </h1>
         
         <div class="grid grid-cols-2 gap-8">
-            <!-- 角色编辑 -->
-            <div class="bg-gray-900 p-6 rounded-3xl">
-                <h2 class="text-2xl mb-6">角色编辑</h2>
-                <input id="name" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="角色名称">
-                <input id="avatar" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="头像URL">
-                <button onclick="saveRole()" class="w-full bg-purple-600 py-4 rounded-2xl">保存角色</button>
+            <!-- 角色管理 -->
+            <div class="bg-gray-900 p-8 rounded-3xl">
+                <h2 class="text-2xl mb-6 text-purple-300">角色编辑</h2>
+                <input id="role-name" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="角色名称">
+                <input id="role-avatar" class="w-full bg-gray-800 p-4 rounded-2xl mb-4" placeholder="头像URL">
+                <button onclick="saveRole()" class="w-full bg-purple-600 py-4 rounded-2xl font-medium">保存角色信息</button>
             </div>
             
-            <!-- 消息回复 -->
-            <div class="bg-gray-900 p-6 rounded-3xl">
-                <h2 class="text-2xl mb-6">实时消息回复</h2>
-                <div id="admin-chat" class="h-96 overflow-auto bg-gray-950 p-4 rounded-2xl mb-4"></div>
-                <input id="admin-input" class="w-full bg-gray-800 p-4 rounded-2xl" placeholder="回复消息..." onkeypress="if(event.key==='Enter') replyMsg()">
+            <!-- 实时回复 -->
+            <div class="bg-gray-900 p-8 rounded-3xl">
+                <h2 class="text-2xl mb-6 text-purple-300">实时消息回复</h2>
+                <div id="admin-chat" class="h-96 bg-gray-950 p-4 rounded-2xl overflow-auto mb-4"></div>
+                <input id="admin-input" class="w-full bg-gray-800 p-4 rounded-2xl" placeholder="输入回复..." onkeypress="if(event.key==='Enter') sendReply()">
             </div>
         </div>
     </div>
